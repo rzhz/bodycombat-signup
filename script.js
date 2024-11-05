@@ -1,9 +1,17 @@
-const apiUrl = 'https://script.google.com/macros/s/AKfycby2L0PHVfqOlShkqtN98to-HXV9rrhnoDBi2_-lzqYxf1yCkrchj35riCN3OOPa5nIK2g/exec'; // Replace with your Google Apps Script URL
+const apiUrl = 'YOUR_GOOGLE_APPS_SCRIPT_URL'; // Replace with your Google Apps Script URL
 const maxSlots = 10;
 
-// Function to fetch current signups from Google Sheets
+// Function to get the selected date
+function getSelectedDate() {
+    const dateInput = document.getElementById("date").value;
+    return dateInput ? dateInput.replace(/-/g, '') : ""; // Format as YYYYMMDD for sheet names
+}
+
+// Function to fetch current signups for the selected date
 async function fetchSignups() {
-    const response = await fetch(`${apiUrl}?action=get`);
+    const date = getSelectedDate();
+    if (!date) return; // Prevent fetch if date is empty
+    const response = await fetch(`${apiUrl}?action=get&date=${date}`);
     const signups = await response.json();
     updateDisplay(signups);
 }
@@ -11,15 +19,17 @@ async function fetchSignups() {
 // Function to add a new signup
 async function signUp() {
     const name = document.getElementById("name").value.trim();
-    if (!name) return;
-    const response = await fetch(`${apiUrl}?action=signup&name=${encodeURIComponent(name)}`);
+    const date = getSelectedDate();
+    if (!name || !date) return;
+    const response = await fetch(`${apiUrl}?action=signup&name=${encodeURIComponent(name)}&date=${date}`);
     const signups = await response.json();
     updateDisplay(signups);
 }
 
 // Function to remove a signup
 async function removeSignup(name) {
-    const response = await fetch(`${apiUrl}?action=remove&name=${encodeURIComponent(name)}`);
+    const date = getSelectedDate();
+    const response = await fetch(`${apiUrl}?action=remove&name=${encodeURIComponent(name)}&date=${date}`);
     const signups = await response.json();
     updateDisplay(signups);
 }
@@ -48,5 +58,6 @@ function updateDisplay(signups) {
     document.getElementById("name").value = "";
 }
 
-// Initialize display on page load
+// Initialize display on date change
+document.getElementById("date").addEventListener("change", fetchSignups);
 window.onload = fetchSignups;
