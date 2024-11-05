@@ -9,29 +9,30 @@ document.getElementById('eventDate').textContent = 'Thursday November 07, 2024';
 
 // Function to fetch current signups for the set date
 async function fetchSignups() {
-    const date = eventDate;
-    const response = await fetch(`${apiUrl}?action=get&date=${date}`);
+    const response = await fetch(`${apiUrl}?action=get&date=${eventDate}`);
     const signups = await response.json();
     updateDisplay(signups);
 }
+
 
 // Function to add a new signup
 async function signUp() {
     const name = document.getElementById("name").value.trim();
-    const date = eventDate;
     if (!name) return;
-    const response = await fetch(`${apiUrl}?action=signup&name=${encodeURIComponent(name)}&date=${date}`);
+    const response = await fetch(`${apiUrl}?action=signup&name=${encodeURIComponent(name)}&date=${eventDate}`);
     const signups = await response.json();
     updateDisplay(signups);
 }
 
+
 // Function to remove a signup
 async function removeSignup(name) {
-    const date = eventDate;
-    const response = await fetch(`${apiUrl}?action=remove&name=${encodeURIComponent(name)}&date=${date}`);
+    const response = await fetch(`${apiUrl}?action=remove&name=${encodeURIComponent(name)}&date=${eventDate}`);
     const signups = await response.json();
     updateDisplay(signups);
 }
+
+console.log('Event Date:', eventDate);
 
 // Update display function remains the same
 function updateDisplay(signups) {
