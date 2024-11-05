@@ -3,6 +3,7 @@ const maxSlots = 10;
 
 // Manually set the event date here (format: YYYYMMDD)
 const eventDate = '20241107'; // Example date: November 13, 2024
+const date = eventDate;
 
 // Display the event date on the page
 document.getElementById('eventDate').textContent = 'Thursday November 07, 2024'; // Adjust the displayed date as needed
