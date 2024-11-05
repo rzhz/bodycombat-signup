@@ -1,4 +1,4 @@
-const apiUrl = 'YOUR_GOOGLE_APPS_SCRIPT_URL'; // Replace with your Google Apps Script URL
+const apiUrl = 'https://script.google.com/macros/s/AKfycbz5m-tb1x9UsnzodzGXg903yzYbwjog5bVj7hvEK6kXblo3b_PFLCpdJq_uvAP6S5Pp3w/exec'; // Replace with your Google Apps Script URL
 const maxSlots = 10;
 
 // Function to get the selected date
