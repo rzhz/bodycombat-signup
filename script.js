@@ -1,16 +1,15 @@
 const apiUrl = 'https://script.google.com/macros/s/AKfycbz5m-tb1x9UsnzodzGXg903yzYbwjog5bVj7hvEK6kXblo3b_PFLCpdJq_uvAP6S5Pp3w/exec'; // Replace with your Google Apps Script URL
 const maxSlots = 10;
 
-// Function to get the selected date
-function getSelectedDate() {
-    const dateInput = document.getElementById("date").value;
-    return dateInput ? dateInput.replace(/-/g, '') : ""; // Format as YYYYMMDD for sheet names
-}
+// Manually set the event date here (format: YYYYMMDD)
+const eventDate = '20241107'; // Example date: November 13, 2024
 
-// Function to fetch current signups for the selected date
+// Display the event date on the page
+document.getElementById('eventDate').textContent = 'Thursday November 07, 2024'; // Adjust the displayed date as needed
+
+// Function to fetch current signups for the set date
 async function fetchSignups() {
-    const date = getSelectedDate();
-    if (!date) return; // Prevent fetch if date is empty
+    const date = eventDate;
     const response = await fetch(`${apiUrl}?action=get&date=${date}`);
     const signups = await response.json();
     updateDisplay(signups);
@@ -19,8 +18,8 @@ async function fetchSignups() {
 // Function to add a new signup
 async function signUp() {
     const name = document.getElementById("name").value.trim();
-    const date = getSelectedDate();
-    if (!name || !date) return;
+    const date = eventDate;
+    if (!name) return;
     const response = await fetch(`${apiUrl}?action=signup&name=${encodeURIComponent(name)}&date=${date}`);
     const signups = await response.json();
     updateDisplay(signups);
@@ -28,13 +27,13 @@ async function signUp() {
 
 // Function to remove a signup
 async function removeSignup(name) {
-    const date = getSelectedDate();
+    const date = eventDate;
     const response = await fetch(`${apiUrl}?action=remove&name=${encodeURIComponent(name)}&date=${date}`);
     const signups = await response.json();
     updateDisplay(signups);
 }
 
-// Update display function to reflect changes in signups
+// Update display function remains the same
 function updateDisplay(signups) {
     const remainingSlots = maxSlots - signups.length;
     document.getElementById("remainingSlots").textContent = remainingSlots;
@@ -58,6 +57,5 @@ function updateDisplay(signups) {
     document.getElementById("name").value = "";
 }
 
-// Initialize display on date change
-document.getElementById("date").addEventListener("change", fetchSignups);
+// Initialize display on page load
 window.onload = fetchSignups;
