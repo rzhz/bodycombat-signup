@@ -43,18 +43,10 @@ async function signUp() {
     }
 }
 
-// Remove a signup
+// Remove a signup (unconditionally)
 async function removeSignup(name) {
-    const userId = localStorage.getItem('currentUserId');
-    const currentUserName = localStorage.getItem('currentUserName');
-
-    if (!userId || name !== currentUserName) {
-        alert("You can't remove this sign-up as it's not associated with this device.");
-        return;
-    }
-
     try {
-        const response = await fetch(`${apiUrl}?action=remove&name=${encodeURIComponent(name)}&userId=${userId}&date=${eventDate}`);
+        const response = await fetch(`${apiUrl}?action=remove&name=${encodeURIComponent(name)}&date=${eventDate}`);
         const signups = await response.json();
         updateDisplay(signups);
     } catch (error) {
@@ -62,16 +54,14 @@ async function removeSignup(name) {
     }
 }
 
-// Update the display of signups
+// Update the display of signups (unconditionally show Remove button)
 function updateDisplay(signups) {
     const remainingSlots = maxSlots - signups.length;
     document.getElementById("remainingSlots").textContent = remainingSlots;
     const signupList = document.getElementById("signupList");
     signupList.innerHTML = "";
 
-    const currentUserId = localStorage.getItem('currentUserId');
-
-    signups.forEach(({ name, userId }) => {
+    signups.forEach(({ name }) => {
         const listItem = document.createElement("li");
         listItem.classList.add("signup-item");
 
@@ -79,14 +69,12 @@ function updateDisplay(signups) {
         nameSpan.textContent = name;
         listItem.appendChild(nameSpan);
 
-        // Show "Remove" button only if this entry matches the current user's ID
-        if (userId === currentUserId) {
-            const removeButton = document.createElement("button");
-            removeButton.textContent = "Remove";
-            removeButton.classList.add("remove-button");
-            removeButton.onclick = () => removeSignup(name);
-            listItem.appendChild(removeButton);
-        }
+        // Unconditionally add the "Remove" button
+        const removeButton = document.createElement("button");
+        removeButton.textContent = "Remove";
+        removeButton.classList.add("remove-button");
+        removeButton.onclick = () => removeSignup(name);
+        listItem.appendChild(removeButton);
 
         signupList.appendChild(listItem);
     });
