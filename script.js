@@ -1,14 +1,12 @@
 const apiUrl = 'https://script.google.com/macros/s/AKfycbyVgC-q4qmYvQ0sXIH9qnpRwo-x0i_EQ3wAWWEeQJOxyfb922Dbcl7vE1U3_NKdfwX12A/exec'; // Google Apps Script URL
 const maxSlots = 15;
-
-// Set the event date here (format: YYYYMMDD)
 const eventDate = '20241107';
 
 // Convert eventDate (YYYYMMDD) to a readable format and display it
 const eventDateObj = new Date(
-    parseInt(eventDate.slice(0, 4)), // Year
-    parseInt(eventDate.slice(4, 6)) - 1, // Month (0-indexed)
-    parseInt(eventDate.slice(6, 8)) // Day
+    parseInt(eventDate.slice(0, 4)),
+    parseInt(eventDate.slice(4, 6)) - 1,
+    parseInt(eventDate.slice(6, 8))
 );
 const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
 const formattedEventDate = eventDateObj.toLocaleDateString(undefined, options);
@@ -44,10 +42,18 @@ async function signUp() {
     }
 }
 
-// Remove a signup (unconditionally)
+// Remove a signup
 async function removeSignup(name) {
+    const userId = localStorage.getItem('currentUserId');
+    const currentUserName = localStorage.getItem('currentUserName');
+
+    if (!userId || name !== currentUserName) {
+        alert("You can't remove this sign-up as it's not associated with this device.");
+        return;
+    }
+
     try {
-        const response = await fetch(`${apiUrl}?action=remove&name=${encodeURIComponent(name)}&date=${eventDate}`);
+        const response = await fetch(`${apiUrl}?action=remove&name=${encodeURIComponent(name)}&userId=${userId}&date=${eventDate}`);
         const signups = await response.json();
         updateDisplay(signups);
     } catch (error) {
@@ -55,17 +61,19 @@ async function removeSignup(name) {
     }
 }
 
-// Update the display of signups (unconditionally show Remove button)
+// Update the display of signups with conditional "Remove" button
 function updateDisplay(signups) {
-    console.log('Full signups data received:', signups); // Log the entire signups array for verification
-
     const remainingSlots = maxSlots - signups.length;
     document.getElementById("remainingSlots").textContent = remainingSlots;
     const signupList = document.getElementById("signupList");
     signupList.innerHTML = "";
 
+    // Retrieve the current user's ID from local storage
+    const currentUserId = localStorage.getItem('currentUserId');
+    const currentUserName = localStorage.getItem('currentUserName');
+
     signups.forEach((name) => {
-        console.log('Processing name:', name); // Log each name for verification
+        console.log('Processing name:', name); // Debug: Log each name for verification
 
         // Create list item
         const listItem = document.createElement("li");
@@ -73,17 +81,17 @@ function updateDisplay(signups) {
 
         // Create span for the name and set text content
         const nameSpan = document.createElement("span");
-        nameSpan.textContent = name; // Directly use `name` as it’s a string
+        nameSpan.textContent = name;
         listItem.appendChild(nameSpan);
 
-        // Create the "Remove" button
-        const removeButton = document.createElement("button");
-        removeButton.textContent = "Remove";
-        removeButton.classList.add("remove-button");
-        removeButton.onclick = () => removeSignup(name);
-
-        // Append the button to the list item
-        listItem.appendChild(removeButton);
+        // Show "Remove" button only if this entry matches the current user's name
+        if (name === currentUserName) {
+            const removeButton = document.createElement("button");
+            removeButton.textContent = "Remove";
+            removeButton.classList.add("remove-button");
+            removeButton.onclick = () => removeSignup(name);
+            listItem.appendChild(removeButton);
+        }
 
         // Append the list item to the signup list
         signupList.appendChild(listItem);
