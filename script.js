@@ -28,19 +28,29 @@ async function fetchSignups() {
 async function signUp() {
     const name = document.getElementById("name").value.trim();
     if (!name) return;
-    const response = await fetch(`${apiUrl}?action=signup&name=${encodeURIComponent(name)}&date=${eventDate}`);
+
+    // Generate a unique identifier (e.g., a random number or timestamp)
+    const userId = Date.now() + Math.random().toString(36).substr(2, 9);
+
+    // Store the ID in the user's local storage
+    localStorage.setItem('userId_' + name, userId);
+
+    // Send the ID along with the name to Google Apps Script
+    const response = await fetch(`${apiUrl}?action=signup&name=${encodeURIComponent(name)}&userId=${userId}&date=${eventDate}`);
     const signups = await response.json();
     updateDisplay(signups);
 }
-
 
 // Function to remove a signup
 async function removeSignup(name) {
-    const response = await fetch(`${apiUrl}?action=remove&name=${encodeURIComponent(name)}&date=${eventDate}`);
+    const userId = localStorage.getItem('userId_' + name);
+    if (!userId) return alert("You can't remove this sign-up as it's not associated with this device.");
+
+    // Include the userId in the remove request
+    const response = await fetch(`${apiUrl}?action=remove&name=${encodeURIComponent(name)}&userId=${userId}&date=${eventDate}`);
     const signups = await response.json();
     updateDisplay(signups);
 }
-
 console.log('Event Date:', eventDate);
 
 // Update display function remains the same
