@@ -17,6 +17,7 @@ const formattedEventDate = eventDateObj.toLocaleDateString(undefined, options);
 
 // Display the formatted event date on the page
 document.getElementById('eventDate').textContent = formattedEventDate;
+
 // Function to fetch current signups for the set date
 async function fetchSignups() {
     const response = await fetch(`${apiUrl}?action=get&date=${eventDate}`);
@@ -60,27 +61,30 @@ function updateDisplay(signups) {
     const signupList = document.getElementById("signupList");
     signupList.innerHTML = "";
 
-    signups.forEach(name => {
+    signups.forEach(({ name, userId }) => {
         const listItem = document.createElement("li");
         listItem.classList.add("signup-item");
 
         const nameSpan = document.createElement("span");
         nameSpan.textContent = name;
-        
-        const removeButton = document.createElement("button");
-        removeButton.textContent = "Remove";
-        removeButton.classList.add("remove-button");
-        removeButton.onclick = () => removeSignup(name);
+
+        // Check if this userId matches the one in local storage
+        const storedUserId = localStorage.getItem('userId_' + name);
+        if (storedUserId && storedUserId === userId) {
+            const removeButton = document.createElement("button");
+            removeButton.textContent = "Remove";
+            removeButton.classList.add("remove-button");
+            removeButton.onclick = () => removeSignup(name);
+            listItem.appendChild(removeButton);
+        }
 
         listItem.appendChild(nameSpan);
-        listItem.appendChild(removeButton);
         signupList.appendChild(listItem);
     });
 
     document.getElementById("signUpBtn").disabled = remainingSlots <= 0;
     document.getElementById("name").value = "";
 }
-
 
 // Initialize display on page load
 window.onload = fetchSignups;
