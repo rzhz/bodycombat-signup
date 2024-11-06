@@ -33,8 +33,9 @@ async function signUp() {
     // Generate a unique identifier (e.g., a random number or timestamp)
     const userId = Date.now() + Math.random().toString(36).substr(2, 9);
 
-    // Store the ID in the user's local storage
-    localStorage.setItem('userId_' + name, userId);
+    // Store the ID in local storage under a consistent key for later retrieval
+    localStorage.setItem('currentUserId', userId);
+    localStorage.setItem('currentUserName', name);
 
     // Send the ID along with the name to Google Apps Script
     const response = await fetch(`${apiUrl}?action=signup&name=${encodeURIComponent(name)}&userId=${userId}&date=${eventDate}`);
@@ -61,8 +62,9 @@ function updateDisplay(signups) {
     const signupList = document.getElementById("signupList");
     signupList.innerHTML = "";
 
-    // Retrieve the user ID for the current user from local storage
-    const currentUserId = localStorage.getItem('userId_' + signups.find(signup => signup.name)?.name);
+    // Retrieve the current user's ID and name from local storage
+    const currentUserId = localStorage.getItem('currentUserId');
+    const currentUserName = localStorage.getItem('currentUserName');
 
     signups.forEach(({ name, userId }) => {
         const listItem = document.createElement("li");
@@ -70,12 +72,10 @@ function updateDisplay(signups) {
 
         const nameSpan = document.createElement("span");
         nameSpan.textContent = name;
-
-        // Append the name to the list item
         listItem.appendChild(nameSpan);
 
-        // Show the "Remove" button only for the current user's sign-up
-        if (userId === currentUserId) {
+        // Show the "Remove" button only if this entry matches the current user's ID
+        if (userId === currentUserId && name === currentUserName) {
             const removeButton = document.createElement("button");
             removeButton.textContent = "Remove";
             removeButton.classList.add("remove-button");
