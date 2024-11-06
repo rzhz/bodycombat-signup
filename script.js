@@ -1,4 +1,4 @@
-const apiUrl = 'https://script.google.com/macros/s/AKfycby2L0PHVfqOlShkqtN98to-HXV9rrhnoDBi2_-lzqYxf1yCkrchj35riCN3OOPa5nIK2g/exec'; // Replace with your Google Apps Script URL
+const apiUrl = 'https://script.google.com/macros/s/AKfycbyVgC-q4qmYvQ0sXIH9qnpRwo-x0i_EQ3wAWWEeQJOxyfb922Dbcl7vE1U3_NKdfwX12A/exec'; // Replace with your Google Apps Script URL
 const maxSlots = 15;
 
 // Manually set the event date here (format: YYYYMMDD)
