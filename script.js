@@ -1,8 +1,8 @@
-const apiUrl = 'https://script.google.com/macros/s/AKfycbyVgC-q4qmYvQ0sXIH9qnpRwo-x0i_EQ3wAWWEeQJOxyfb922Dbcl7vE1U3_NKdfwX12A/exec'; // Replace with your Google Apps Script URL
+const apiUrl = 'https://script.google.com/macros/s/AKfycbyVgC-q4qmYvQ0sXIH9qnpRwo-x0i_EQ3wAWWEeQJOxyfb922Dbcl7vE1U3_NKdfwX12A/exec'; // Google Apps Script URL
 const maxSlots = 15;
 
-// Manually set the event date here (format: YYYYMMDD)
-const eventDate = '20241107'; // Example date: November 13, 2024
+// Set the event date here (format: YYYYMMDD)
+const eventDate = '20241107';
 
 // Convert eventDate (YYYYMMDD) to a readable format and display it
 const eventDateObj = new Date(
@@ -10,61 +10,66 @@ const eventDateObj = new Date(
     parseInt(eventDate.slice(4, 6)) - 1, // Month (0-indexed)
     parseInt(eventDate.slice(6, 8)) // Day
 );
-
-// Format the date to a readable string
 const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
 const formattedEventDate = eventDateObj.toLocaleDateString(undefined, options);
-
-// Display the formatted event date on the page
 document.getElementById('eventDate').textContent = formattedEventDate;
 
-// Function to fetch current signups for the set date
+// Fetch current signups for the set date
 async function fetchSignups() {
-    const response = await fetch(`${apiUrl}?action=get&date=${eventDate}`);
-    const signups = await response.json();
-    updateDisplay(signups);
+    try {
+        const response = await fetch(`${apiUrl}?action=get&date=${eventDate}`);
+        const signups = await response.json();
+        updateDisplay(signups);
+    } catch (error) {
+        console.error('Error fetching signups:', error);
+    }
 }
 
-// Function to add a new signup
+// Add a new signup
 async function signUp() {
     const name = document.getElementById("name").value.trim();
     if (!name) return;
 
-    // Generate a unique identifier (e.g., a random number or timestamp)
     const userId = Date.now() + Math.random().toString(36).substr(2, 9);
-
-    // Store the ID in local storage under a consistent key for later retrieval
     localStorage.setItem('currentUserId', userId);
     localStorage.setItem('currentUserName', name);
 
-    // Send the ID along with the name to Google Apps Script
-    const response = await fetch(`${apiUrl}?action=signup&name=${encodeURIComponent(name)}&userId=${userId}&date=${eventDate}`);
-    const signups = await response.json();
-    updateDisplay(signups);
+    try {
+        const response = await fetch(`${apiUrl}?action=signup&name=${encodeURIComponent(name)}&userId=${userId}&date=${eventDate}`);
+        const signups = await response.json();
+        updateDisplay(signups);
+    } catch (error) {
+        console.error('Error signing up:', error);
+    }
 }
 
-// Function to remove a signup
+// Remove a signup
 async function removeSignup(name) {
-    const userId = localStorage.getItem('userId_' + name);
-    if (!userId) return alert("You can't remove this sign-up as it's not associated with this device.");
+    const userId = localStorage.getItem('currentUserId');
+    const currentUserName = localStorage.getItem('currentUserName');
 
-    // Include the userId in the remove request
-    const response = await fetch(`${apiUrl}?action=remove&name=${encodeURIComponent(name)}&userId=${userId}&date=${eventDate}`);
-    const signups = await response.json();
-    updateDisplay(signups);
+    if (!userId || name !== currentUserName) {
+        alert("You can't remove this sign-up as it's not associated with this device.");
+        return;
+    }
+
+    try {
+        const response = await fetch(`${apiUrl}?action=remove&name=${encodeURIComponent(name)}&userId=${userId}&date=${eventDate}`);
+        const signups = await response.json();
+        updateDisplay(signups);
+    } catch (error) {
+        console.error('Error removing signup:', error);
+    }
 }
-console.log('Event Date:', eventDate);
 
-// Update display function remains the same
+// Update the display of signups
 function updateDisplay(signups) {
     const remainingSlots = maxSlots - signups.length;
     document.getElementById("remainingSlots").textContent = remainingSlots;
     const signupList = document.getElementById("signupList");
     signupList.innerHTML = "";
 
-    // Retrieve the current user's ID and name from local storage
     const currentUserId = localStorage.getItem('currentUserId');
-    const currentUserName = localStorage.getItem('currentUserName');
 
     signups.forEach(({ name, userId }) => {
         const listItem = document.createElement("li");
@@ -74,8 +79,8 @@ function updateDisplay(signups) {
         nameSpan.textContent = name;
         listItem.appendChild(nameSpan);
 
-        // Show the "Remove" button only if this entry matches the current user's ID
-        if (userId === currentUserId && name === currentUserName) {
+        // Show "Remove" button only if this entry matches the current user's ID
+        if (userId === currentUserId) {
             const removeButton = document.createElement("button");
             removeButton.textContent = "Remove";
             removeButton.classList.add("remove-button");
@@ -83,7 +88,6 @@ function updateDisplay(signups) {
             listItem.appendChild(removeButton);
         }
 
-        // Append the list item to the sign-up list
         signupList.appendChild(listItem);
     });
 
