@@ -57,18 +57,15 @@ async function removeSignup(name) {
 
 // Update the display of signups (unconditionally show Remove button)
 function updateDisplay(signups) {
-    console.log('Full signups data received:', signups); // Log the entire signups array
+    console.log('Full signups data received:', signups); // Log the entire signups array for verification
 
     const remainingSlots = maxSlots - signups.length;
     document.getElementById("remainingSlots").textContent = remainingSlots;
     const signupList = document.getElementById("signupList");
     signupList.innerHTML = "";
 
-    signups.forEach((signup) => {
-        console.log('Signup entry:', signup); // Log each signup entry for inspection
-
-        // Check if `signup` has a `name` property
-        const name = signup.name || "No name available"; // Add a fallback for debugging
+    signups.forEach((name) => {
+        console.log('Processing name:', name); // Log each name for verification
 
         // Create list item
         const listItem = document.createElement("li");
@@ -76,7 +73,7 @@ function updateDisplay(signups) {
 
         // Create span for the name and set text content
         const nameSpan = document.createElement("span");
-        nameSpan.textContent = name;
+        nameSpan.textContent = name; // Directly use `name` as it’s a string
         listItem.appendChild(nameSpan);
 
         // Create the "Remove" button
@@ -95,7 +92,6 @@ function updateDisplay(signups) {
     document.getElementById("signUpBtn").disabled = remainingSlots <= 0;
     document.getElementById("name").value = "";
 }
-
 
 // Initialize display on page load
 window.onload = fetchSignups;
