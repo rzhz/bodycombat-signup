@@ -50,18 +50,19 @@ function updateDisplay(signups) {
     const signupList = document.getElementById("signupList");
     signupList.innerHTML = "";
 
+    const fragment = document.createDocumentFragment();
     signups.forEach(name => {
         const listItem = document.createElement("li");
         listItem.textContent = name;
-        
-        // Add a remove button for each signup
+
         const removeButton = document.createElement("button");
         removeButton.textContent = "Remove";
         removeButton.onclick = () => removeSignup(name);
         listItem.appendChild(removeButton);
 
-        signupList.appendChild(listItem);
+        fragment.appendChild(listItem);
     });
+    signupList.appendChild(fragment);
 
     document.getElementById("signUpBtn").disabled = remainingSlots <= 0;
     document.getElementById("name").value = "";
