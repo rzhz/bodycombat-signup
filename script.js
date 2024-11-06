@@ -5,7 +5,7 @@ const maxSlots = 15;
 const eventDate = '20241107'; // Example date: November 13, 2024
 
 // Display the event date on the page
-document.getElementById('eventDate').textContent = 'Thursday November 07, 2024'; // Adjust the displayed date as needed
+document.getElementById('eventDate').textContent = 'Thursday November 07, 2024'; // Adjust the displayed date as  needed
 
 // Function to fetch current signups for the set date
 async function fetchSignups() {
