@@ -4,9 +4,19 @@ const maxSlots = 15;
 // Manually set the event date here (format: YYYYMMDD)
 const eventDate = '20241107'; // Example date: November 13, 2024
 
-// Display the event date on the page
-document.getElementById('eventDate').textContent = 'Thursday November 07, 2024'; // Adjust the displayed date as  needed
+// Convert eventDate (YYYYMMDD) to a readable format and display it
+const eventDateObj = new Date(
+    parseInt(eventDate.slice(0, 4)), // Year
+    parseInt(eventDate.slice(4, 6)) - 1, // Month (0-indexed)
+    parseInt(eventDate.slice(6, 8)) // Day
+);
 
+// Format the date to a readable string
+const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+const formattedEventDate = eventDateObj.toLocaleDateString(undefined, options);
+
+// Display the formatted event date on the page
+document.getElementById('eventDate').textContent = formattedEventDate;
 // Function to fetch current signups for the set date
 async function fetchSignups() {
     const response = await fetch(`${apiUrl}?action=get&date=${eventDate}`);
