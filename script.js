@@ -64,19 +64,20 @@ function updateDisplay(signups) {
 
     signups.forEach(({ name }) => {
         const listItem = document.createElement("li");
-        listItem.classList.add("signup-item");
 
-        const nameSpan = document.createElement("span");
-        nameSpan.textContent = name;
-        listItem.appendChild(nameSpan);
+        // Display the name directly
+        listItem.textContent = name;
 
-        // Unconditionally add the "Remove" button
+        // Add a "Remove" button to each name
         const removeButton = document.createElement("button");
         removeButton.textContent = "Remove";
-        removeButton.classList.add("remove-button");
+        removeButton.style.marginLeft = "10px";
         removeButton.onclick = () => removeSignup(name);
+
+        // Append the button next to the name
         listItem.appendChild(removeButton);
 
+        // Append to the list
         signupList.appendChild(listItem);
     });
 
