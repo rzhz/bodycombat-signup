@@ -19,7 +19,7 @@ async function fetchSignups() {
     try {
         const response = await fetch(`${apiUrl}?action=get&date=${eventDate}`);
         const signups = await response.json();
-        console.log('Signups data:', signups); // Debugging line
+        console.log('Signups data:', signups); // Log the signups data to inspect
         updateDisplay(signups);
     } catch (error) {
         console.error('Error fetching signups:', error);
