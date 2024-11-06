@@ -61,6 +61,9 @@ function updateDisplay(signups) {
     const signupList = document.getElementById("signupList");
     signupList.innerHTML = "";
 
+    // Retrieve the user ID for the current user from local storage
+    const currentUserId = localStorage.getItem('userId_' + signups.find(signup => signup.name)?.name);
+
     signups.forEach(({ name, userId }) => {
         const listItem = document.createElement("li");
         listItem.classList.add("signup-item");
@@ -68,9 +71,11 @@ function updateDisplay(signups) {
         const nameSpan = document.createElement("span");
         nameSpan.textContent = name;
 
-        // Check if this userId matches the one in local storage
-        const storedUserId = localStorage.getItem('userId_' + name);
-        if (storedUserId && storedUserId === userId) {
+        // Append the name to the list item
+        listItem.appendChild(nameSpan);
+
+        // Show the "Remove" button only for the current user's sign-up
+        if (userId === currentUserId) {
             const removeButton = document.createElement("button");
             removeButton.textContent = "Remove";
             removeButton.classList.add("remove-button");
@@ -78,7 +83,7 @@ function updateDisplay(signups) {
             listItem.appendChild(removeButton);
         }
 
-        listItem.appendChild(nameSpan);
+        // Append the list item to the sign-up list
         signupList.appendChild(listItem);
     });
 
