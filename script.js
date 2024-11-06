@@ -1,9 +1,8 @@
 const apiUrl = 'https://script.google.com/macros/s/AKfycbz5m-tb1x9UsnzodzGXg903yzYbwjog5bVj7hvEK6kXblo3b_PFLCpdJq_uvAP6S5Pp3w/exec'; // Replace with your Google Apps Script URL
-const maxSlots = 10;
+const maxSlots = 15;
 
 // Manually set the event date here (format: YYYYMMDD)
 const eventDate = '20241107'; // Example date: November 13, 2024
-const date = eventDate;
 
 // Display the event date on the page
 document.getElementById('eventDate').textContent = 'Thursday November 07, 2024'; // Adjust the displayed date as needed
@@ -14,7 +13,6 @@ async function fetchSignups() {
     const signups = await response.json();
     updateDisplay(signups);
 }
-
 
 // Function to add a new signup
 async function signUp() {
