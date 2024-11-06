@@ -56,7 +56,7 @@ async function removeSignup(name) {
 }
 
 // Update the display of signups (unconditionally show Remove button)
-function updateDisplay(signups) {
+ffunction updateDisplay(signups) {
     const remainingSlots = maxSlots - signups.length;
     document.getElementById("remainingSlots").textContent = remainingSlots;
     const signupList = document.getElementById("signupList");
@@ -86,6 +86,7 @@ function updateDisplay(signups) {
     document.getElementById("signUpBtn").disabled = remainingSlots <= 0;
     document.getElementById("name").value = "";
 }
+
 
 // Initialize display on page load
 window.onload = fetchSignups;
