@@ -60,23 +60,27 @@ function updateDisplay(signups) {
     const signupList = document.getElementById("signupList");
     signupList.innerHTML = "";
 
-    const fragment = document.createDocumentFragment();
     signups.forEach(name => {
         const listItem = document.createElement("li");
-        listItem.textContent = name;
+        listItem.classList.add("signup-item");
 
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = name;
+        
         const removeButton = document.createElement("button");
         removeButton.textContent = "Remove";
+        removeButton.classList.add("remove-button");
         removeButton.onclick = () => removeSignup(name);
-        listItem.appendChild(removeButton);
 
-        fragment.appendChild(listItem);
+        listItem.appendChild(nameSpan);
+        listItem.appendChild(removeButton);
+        signupList.appendChild(listItem);
     });
-    signupList.appendChild(fragment);
 
     document.getElementById("signUpBtn").disabled = remainingSlots <= 0;
     document.getElementById("name").value = "";
 }
+
 
 // Initialize display on page load
 window.onload = fetchSignups;
