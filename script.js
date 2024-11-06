@@ -63,14 +63,18 @@ function updateDisplay(signups) {
     signupList.innerHTML = "";
 
     signups.forEach(({ name }) => {
+        console.log('Processing name:', name); // Debug: Log each name being processed
+
+        // Create list item
         const listItem = document.createElement("li");
         listItem.classList.add("signup-item");
 
+        // Create span for the name and set text content
         const nameSpan = document.createElement("span");
-        nameSpan.textContent = name;
+        nameSpan.textContent = name || "No name available"; // Add a fallback in case name is empty
         listItem.appendChild(nameSpan);
 
-        // Add a compact "Remove" button next to each name
+        // Create the "Remove" button
         const removeButton = document.createElement("button");
         removeButton.textContent = "Remove";
         removeButton.classList.add("remove-button");
@@ -86,7 +90,6 @@ function updateDisplay(signups) {
     document.getElementById("signUpBtn").disabled = remainingSlots <= 0;
     document.getElementById("name").value = "";
 }
-
 
 // Initialize display on page load
 window.onload = fetchSignups;
