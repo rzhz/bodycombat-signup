@@ -1,4 +1,3 @@
-let signupsLoaded = false;
 const apiUrl = 'https://script.google.com/macros/s/AKfycbyVgC-q4qmYvQ0sXIH9qnpRwo-x0i_EQ3wAWWEeQJOxyfb922Dbcl7vE1U3_NKdfwX12A/exec'; // Google Apps Script URL
 const maxSlots = 16;
 const eventDate = '20250327';
@@ -12,6 +11,8 @@ const eventDateObj = new Date(
 const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
 const formattedEventDate = eventDateObj.toLocaleDateString(undefined, options);
 document.getElementById('eventDate').textContent = formattedEventDate;
+
+let signupsLoaded = false;
 
 // Fetch current signups for the set date
 async function fetchSignups() {
