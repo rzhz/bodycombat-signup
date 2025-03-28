@@ -1,3 +1,4 @@
+let signupsLoaded = false;
 const apiUrl = 'https://script.google.com/macros/s/AKfycbyVgC-q4qmYvQ0sXIH9qnpRwo-x0i_EQ3wAWWEeQJOxyfb922Dbcl7vE1U3_NKdfwX12A/exec'; // Google Apps Script URL
 const maxSlots = 16;
 const eventDate = '20250327';
@@ -26,12 +27,23 @@ async function fetchSignups() {
 
 // Add a new signup
 async function signUp() {
+    if (!signupsLoaded) {
+        alert("Please wait for the sign-up list to load.");
+        return;
+    }
+
     const name = document.getElementById("name").value.trim();
     if (!name) return;
 
+    const currentUserName = localStorage.getItem(`currentUserName_${eventDate}`);
+    if (name === currentUserName) {
+        alert("You have already signed up.");
+        return;
+    }
+
     const userId = Date.now() + Math.random().toString(36).substr(2, 9);
-    localStorage.setItem('currentUserId', userId);
-    localStorage.setItem('currentUserName', name);
+    localStorage.setItem(`currentUserId_${eventDate}`, userId);
+    localStorage.setItem(`currentUserName_${eventDate}`, name);
 
     try {
         const response = await fetch(`${apiUrl}?action=signup&name=${encodeURIComponent(name)}&userId=${userId}&date=${eventDate}`);
@@ -41,6 +53,7 @@ async function signUp() {
         console.error('Error signing up:', error);
     }
 }
+
 
 // Remove a signup
 async function removeSignup(name) {
@@ -63,28 +76,23 @@ async function removeSignup(name) {
 
 // Update the display of signups with conditional "Remove" button
 function updateDisplay(signups) {
+    signupsLoaded = true;
+
     const remainingSlots = maxSlots - signups.length;
     document.getElementById("remainingSlots").textContent = remainingSlots;
     const signupList = document.getElementById("signupList");
     signupList.innerHTML = "";
 
-    // Retrieve the current user's ID from local storage
-    const currentUserId = localStorage.getItem('currentUserId');
-    const currentUserName = localStorage.getItem('currentUserName');
+    const currentUserName = localStorage.getItem(`currentUserName_${eventDate}`);
 
     signups.forEach((name) => {
-        console.log('Processing name:', name); // Debug: Log each name for verification
-
-        // Create list item
         const listItem = document.createElement("li");
         listItem.classList.add("signup-item");
 
-        // Create span for the name and set text content
         const nameSpan = document.createElement("span");
         nameSpan.textContent = name;
         listItem.appendChild(nameSpan);
 
-        // Show "Remove" button only if this entry matches the current user's name
         if (name === currentUserName) {
             const removeButton = document.createElement("button");
             removeButton.textContent = "Remove";
@@ -93,13 +101,15 @@ function updateDisplay(signups) {
             listItem.appendChild(removeButton);
         }
 
-        // Append the list item to the signup list
         signupList.appendChild(listItem);
     });
 
+    // Enable button only if there are slots
     document.getElementById("signUpBtn").disabled = remainingSlots <= 0;
-    document.getElementById("name").value = "";
+    document.getElementById("loadingMsg")?.remove(); // Remove loading text
+
 }
+
 
 // Initialize display on page load
 window.onload = fetchSignups;
