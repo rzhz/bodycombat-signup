@@ -1,6 +1,6 @@
 const apiUrl = 'https://script.google.com/macros/s/AKfycbyVgC-q4qmYvQ0sXIH9qnpRwo-x0i_EQ3wAWWEeQJOxyfb922Dbcl7vE1U3_NKdfwX12A/exec'; // Google Apps Script URL
 const maxSlots = 16;
-const eventDate = '20250423';
+const eventDate = '20250501';
 
 // Convert eventDate (YYYYMMDD) to a readable format and display it
 const eventDateObj = new Date(
