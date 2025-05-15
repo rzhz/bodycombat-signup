@@ -58,8 +58,9 @@ async function signUp() {
 
 // Remove a signup
 async function removeSignup(name) {
-    const userId = localStorage.getItem('currentUserId');
-    const currentUserName = localStorage.getItem('currentUserName');
+    // Use event-specific storage key!
+    const userId = localStorage.getItem(`currentUserId_${eventDate}`);
+    const currentUserName = localStorage.getItem(`currentUserName_${eventDate}`);
 
     if (!userId || name !== currentUserName) {
         alert("You can't remove this sign-up as it's not associated with this device.");
@@ -86,7 +87,7 @@ function updateDisplay(signups) {
 
     const currentUserName = localStorage.getItem(`currentUserName_${eventDate}`);
 
-    signups.forEach((name) => {
+    signups.forEach(({ name, userId }) => {
         const listItem = document.createElement("li");
         listItem.classList.add("signup-item");
 
