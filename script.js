@@ -36,17 +36,15 @@ async function signUp() {
     const name = document.getElementById("name").value.trim();
     if (!name) return;
 
-    // Get existing signups or create empty object
-    let deviceSignups = JSON.parse(localStorage.getItem(`signups_${eventDate}`) || '{}');
-
-    if (deviceSignups[name]) {
-        alert("You have already signed up with this name on this device.");
+    const currentUserName = localStorage.getItem(`currentUserName_${eventDate}`);
+    if (name === currentUserName) {
+        alert("You have already signed up.");
         return;
     }
 
     const userId = Date.now() + Math.random().toString(36).substr(2, 9);
-    deviceSignups[name] = userId;
-    localStorage.setItem(`signups_${eventDate}`, JSON.stringify(deviceSignups));
+    localStorage.setItem(`currentUserId_${eventDate}`, userId);
+    localStorage.setItem(`currentUserName_${eventDate}`, name);
 
     try {
         const response = await fetch(`${apiUrl}?action=signup&name=${encodeURIComponent(name)}&userId=${userId}&date=${eventDate}`);
@@ -60,26 +58,22 @@ async function signUp() {
 
 // Remove a signup
 async function removeSignup(name) {
-    let deviceSignups = JSON.parse(localStorage.getItem(`signups_${eventDate}`) || '{}');
-    const userId = deviceSignups[name];
+  const userId          = localStorage.getItem(`currentUserId_${eventDate}`);
+  const currentUserName = localStorage.getItem(`currentUserName_${eventDate}`);
 
-    if (!userId) {
-        alert("You can't remove this sign-up as it's not associated with this device.");
-        return;
-    }
+  if (!userId || name !== currentUserName) {
+    return alert("You can't remove this sign-up as it's not associated with this device.");
+  }
 
-    try {
-        const response = await fetch(`${apiUrl}?action=remove&name=${encodeURIComponent(name)}&userId=${userId}&date=${eventDate}`);
-        const signups = await response.json();
-
-        // Remove from local storage on success
-        delete deviceSignups[name];
-        localStorage.setItem(`signups_${eventDate}`, JSON.stringify(deviceSignups));
-
-        updateDisplay(signups);
-    } catch (error) {
-        console.error('Error removing signup:', error);
-    }
+  try {
+    const response = await fetch(
+      `${apiUrl}?action=remove&name=${encodeURIComponent(name)}&userId=${userId}&date=${eventDate}`
+    );
+    const signups = await response.json();
+    updateDisplay(signups);
+  } catch (error) {
+    console.error('Error removing signup:', error);
+  }
 }
 
 
@@ -92,9 +86,9 @@ function updateDisplay(signups) {
     const signupList = document.getElementById("signupList");
     signupList.innerHTML = "";
 
-    const deviceSignups = JSON.parse(localStorage.getItem(`signups_${eventDate}`) || '{}');
-    
-    signups.forEach(({ name, userId }) => {
+    const currentUserName = localStorage.getItem(`currentUserName_${eventDate}`);
+
+    signups.forEach((name) => {
         const listItem = document.createElement("li");
         listItem.classList.add("signup-item");
 
@@ -102,7 +96,7 @@ function updateDisplay(signups) {
         nameSpan.textContent = name;
         listItem.appendChild(nameSpan);
 
-        if (deviceSignups[name] === userId) {
+        if (name === currentUserName) {
             const removeButton = document.createElement("button");
             removeButton.textContent = "Remove";
             removeButton.classList.add("remove-button");
